@@ -1,179 +1,172 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { Fragment } from 'react';
-import { Popover, Transition } from '@headlessui/react';
-import { MenuIcon, XIcon } from '@heroicons/react/outline';
-import Modal from '../components/Modal';
+import { useContext, useState, useEffect, useCallback } from 'react';
+import { UserAddIcon } from '@heroicons/react/outline';
+import debounce from 'lodash.debounce';
 
-const navigation = [
-  { name: 'Product', href: '#' },
-  { name: 'Features', href: '#' },
-  { name: 'Marketplace', href: '#' },
-  { name: 'Company', href: '#' }
-];
+import { auth, firestore, googleAuthProvider } from '../lib/firebase';
+import UserContext from '../context/userContext';
 
-export default function Example() {
+export default function Enter() {
+  const { user, username } = useContext(UserContext);
+
   return (
-    <>
-      <Modal />
-      <div className="relative bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <svg
-              className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2"
-              fill="currentColor"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <polygon points="50,0 100,0 50,100 0,100" />
-            </svg>
-
-            <Popover>
-              {({ open }) => (
-                <>
-                  <div className="relative pt-6 px-4 sm:px-6 lg:px-8">
-                    <nav
-                      className="relative flex items-center justify-between sm:h-10 lg:justify-start"
-                      aria-label="Global"
-                    >
-                      <div className="flex items-center flex-grow flex-shrink-0 lg:flex-grow-0">
-                        <div className="flex items-center justify-between w-full md:w-auto">
-                          <a href="#">
-                            <span className="sr-only">Workflow</span>
-                            <img
-                              className="h-8 w-auto sm:h-10"
-                              src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                            />
-                          </a>
-                          <div className="-mr-2 flex items-center md:hidden">
-                            <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                              <span className="sr-only">Open main menu</span>
-                              <MenuIcon
-                                className="h-6 w-6"
-                                aria-hidden="true"
-                              />
-                            </Popover.Button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="hidden md:block md:ml-10 md:pr-4 md:space-x-8">
-                        {navigation.map((item) => (
-                          <a
-                            key={item.name}
-                            href={item.href}
-                            className="font-medium text-gray-500 hover:text-gray-900"
-                          >
-                            {item.name}
-                          </a>
-                        ))}
-                        <a
-                          href="#"
-                          className="font-medium text-indigo-600 hover:text-indigo-500"
-                        >
-                          Log in
-                        </a>
-                      </div>
-                    </nav>
-                  </div>
-
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="duration-150 ease-out"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
-                    leave="duration-100 ease-in"
-                    leaveFrom="opacity-100 scale-100"
-                    leaveTo="opacity-0 scale-95"
-                  >
-                    <Popover.Panel
-                      focus
-                      static
-                      className="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
-                    >
-                      <div className="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
-                        <div className="px-5 pt-4 flex items-center justify-between">
-                          <div>
-                            <img
-                              className="h-8 w-auto"
-                              src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                              alt=""
-                            />
-                          </div>
-                          <div className="-mr-2">
-                            <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                              <span className="sr-only">Close main menu</span>
-                              <XIcon className="h-6 w-6" aria-hidden="true" />
-                            </Popover.Button>
-                          </div>
-                        </div>
-                        <div className="px-2 pt-2 pb-3 space-y-1">
-                          {navigation.map((item) => (
-                            <a
-                              key={item.name}
-                              href={item.href}
-                              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                            >
-                              {item.name}
-                            </a>
-                          ))}
-                        </div>
-                        <a
-                          href="#"
-                          className="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100"
-                        >
-                          Log in
-                        </a>
-                      </div>
-                    </Popover.Panel>
-                  </Transition>
-                </>
-              )}
-            </Popover>
-
-            <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-              <div className="sm:text-center lg:text-left">
-                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                  <span className="block xl:inline">Data to enrich your</span>{' '}
-                  <span className="block text-indigo-600 xl:inline">
-                    online business
-                  </span>
-                </h1>
-                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                  Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure
-                  qui lorem cupidatat commodo. Elit sunt amet fugiat veniam
-                  occaecat fugiat aliqua.
-                </p>
-                <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                  <div className="rounded-md shadow">
-                    <a
-                      href="#"
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
-                    >
-                      Get started
-                    </a>
-                  </div>
-                  <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <a
-                      href="#"
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
-                    >
-                      Live demo
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </main>
-          </div>
-        </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <img
-            className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
-            src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80"
-            alt=""
-          />
-        </div>
-      </div>
-    </>
+    <main className="container mx-auto">
+      {user ? (
+        !username ? (
+          <UsernameForm user={user} />
+        ) : (
+          <SignOutButton />
+        )
+      ) : (
+        <SignInButton username={username} />
+      )}
+    </main>
   );
+}
+
+function SignInButton(params) {
+  try {
+    const signInWithGoogle = async () => {
+      await auth.signInWithPopup(googleAuthProvider);
+    };
+    return (
+      <button
+        onClick={signInWithGoogle}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 flex items-center px-4 rounded"
+      >
+        <UserAddIcon className="h-10 w-auto mr-2" /> Sign In With Google
+      </button>
+    );
+  } catch (err) {
+    console.error('google auth error', err);
+  }
+}
+
+const SignOutButton = () => {
+  try {
+    const signOut = async () => {
+      await auth.signOut();
+    };
+    return (
+      <button
+        onClick={(signOut, console.log('I was clicked'))}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 flex items-center px-4 rounded"
+      >
+        <UserAddIcon className="h-10 w-auto mr-2" /> Sign Out
+      </button>
+    );
+  } catch (err) {
+    console.log('Error Signing Out:', err);
+  }
+};
+
+function UsernameForm({ user, username }) {
+  try {
+    const [formValue, setFormValue] = useState('');
+    const [isValid, setIsValid] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+      checkUsername(formValue);
+    }, [formValue]);
+
+    const onChange = (e) => {
+      const val = e.target.value.toLowerCase();
+      const re = /^(?=[a-zA-Z0-9._]{3,15}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
+      if (val.length < 3) {
+        setFormValue(val);
+        setLoading(false);
+        setIsValid(false);
+      }
+      if (re.test(val)) {
+        setFormValue(val);
+        setLoading(true);
+        setIsValid(false);
+      }
+    };
+
+    const checkUsername = useCallback(
+      debounce(async (username) => {
+        if (username.length >= 3) {
+          const ref = firestore.doc(`usernames/${username}`);
+          const { exists } = await ref.get();
+          setIsValid(!exists);
+          setLoading(false);
+        }
+      }, 500),
+      []
+    );
+
+    const onSubmit = async (e) => {
+      try {
+        e.preventDefault();
+
+        // create a ref for compare
+        const userDoc = firestore.doc(`users/${user.uid}`);
+        const usernameDoc = firestore.doc(`usernames/${formValue}`);
+
+        // Combine refs for single comparison - first value is the name second is the value
+        const batch = firestore.batch();
+        batch.set(userDoc, {
+          username: formValue,
+          photoURL: user.photoURL,
+          displayName: user.displayName
+        });
+        batch.set(usernameDoc, { uid: user.uid });
+
+        await batch.commit();
+      } catch (err) {
+        console.error('On Submit Error', err);
+      }
+    };
+    return (
+      !username && (
+        <section>
+          <h3>Choose a Username</h3>
+          <form onSubmit={onSubmit}>
+            <input
+              type="text"
+              name="username"
+              placeholder="username"
+              value={formValue}
+              onChange={onChange}
+              className="w-64 bg-gray-100 text-sm font-medium leading-none text-gray-800 p-3 border rounded border-gray-200"
+            />
+            <UsernameMessage
+              username={username}
+              isValid={isValid}
+              loading={loading}
+            />
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 flex items-center px-4 rounded"
+              type="submit"
+            >
+              Save Username
+            </button>
+            <div>
+              <h3>Debug State</h3>
+              <p>Username: {formValue}</p>
+              <br />
+              Loading: {loading.toString()}
+              <br />
+              Username Valid: {isValid.toString()}
+            </div>
+          </form>
+        </section>
+      )
+    );
+  } catch (err) {
+    console.error(err);
+  }
+
+  function UsernameMessage({ username, isValid, loading }) {
+    if (loading) {
+      return <p>Loading...</p>;
+    } else if (isValid) {
+      return <p className="text-green-400	">{username} is available</p>;
+    } else if (username && !isValid) {
+      return <p className="text-red-400	">That username is taken</p>;
+    } else {
+      return <p></p>;
+    }
+  }
 }
